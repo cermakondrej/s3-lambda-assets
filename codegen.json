@@ -1,0 +1,46 @@
+{
+  "overwrite": true,
+  "config": {
+    "strict": true
+  },
+  "generates": {
+    "src/plugins/presigned-assets-upload/api/generated-admin-types.ts": {
+      "schema": "http://localhost:3000/admin-api",
+      "plugins": [
+        {
+          "add": {
+            "content": "// tslint:disable"
+          }
+        },
+        "typescript",
+        "typescript-compatibility"
+      ]
+    },
+    "src/plugins/presigned-assets-upload/api/generated-shop-types.ts": {
+      "schema": "http://localhost:3000/shop-api",
+      "plugins": [
+        {
+          "add": {
+            "content": "// tslint:disable"
+          }
+        },
+        "typescript",
+        "typescript-compatibility"
+      ]
+    },
+    "src/plugins/presigned-assets-upload/ui/generated-types.ts": {
+      "schema": "http://localhost:3000/admin-api",
+      "documents": "src/plugins/presigned-assets-upload/ui/**/*.graphql.ts",
+      "plugins": [
+        {
+          "add": {
+            "content": "// tslint:disable"
+          }
+        },
+        "typescript",
+        "typescript-compatibility",
+        "typescript-operations"
+      ]
+    }
+  }
+}
