@@ -53,7 +53,6 @@ export class AssetService {
     async createPresignedPost(ctx: RequestContext, filename: string): Promise<PresignedPost> {
         const params: S3.PresignedPost.Params = {
             Bucket: this.options.bucketName,
-
             Fields: {
                 key: await this.getSourceFileName(ctx, filename)
             },

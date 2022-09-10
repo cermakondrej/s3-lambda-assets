@@ -86,35 +86,38 @@ export class AssetListComponent
         if (files.length) {
             this.uploading = true;
 
-            this.presignedUploadService.createPresignedPost(files[0].name).subscribe(({createPresignedPost}) => {
-                console.log(createPresignedPost);
-                let form = new FormData();
-                Object.keys(createPresignedPost.fields).forEach(key => form.append(key, createPresignedPost.fields[key]));
-                form.append('file', files[0]);
-                fetch(createPresignedPost.url, {method: 'POST', body: form}).then((res) => {
-                    this.presignedUploadService.createExistingAssets([{filename: createPresignedPost.fields['key']}])
-                        .pipe(finalize(() => (this.uploading = false)))
-                        .subscribe(({createExistingAssets}) => {
-                            let successCount = 0;
-                            for (const result of createExistingAssets) {
-                                switch (result.__typename) {
-                                    case 'Asset':
-                                        successCount++;
-                                        break;
-                                    case 'MimeTypeError':
-                                        this.notificationService.error(result.message);
-                                        break;
+            files.forEach((file) => {
+                this.presignedUploadService.createPresignedPost(file.name).subscribe(({createPresignedPost}) => {
+                    let form = new FormData();
+                    Object.keys(createPresignedPost.fields).forEach(key => form.append(key, createPresignedPost.fields[key]));
+                    form.append('file', file);
+                    fetch(createPresignedPost.url, {method: 'POST', body: form}).then((res) => {
+                        this.presignedUploadService.createExistingAssets([{filename: createPresignedPost.fields['key']}])
+                            .subscribe(({createExistingAssets}) => {
+                                let successCount = 0;
+                                for (const result of createExistingAssets) {
+                                    switch (result.__typename) {
+                                        case 'Asset':
+                                            successCount++;
+                                            break;
+                                        case 'MimeTypeError':
+                                            this.notificationService.error(result.message);
+                                            break;
+                                    }
                                 }
-                            }
-                            if (0 < successCount) {
-                                super.refresh();
-                                this.notificationService.success(_('asset.notify-create-assets-success'), {
-                                    count: successCount,
-                                });
-                            }
-                        })
+                                if (0 < successCount) {
+                                    super.refresh();
+                                    this.notificationService.success(_('asset.notify-create-assets-success'), {
+                                        count: successCount,
+                                    });
+                                }
+                            })
+                    });
                 });
             });
+
+            this.uploading = false;
+
 
         }
     }
